@@ -180,8 +180,8 @@ class WebSocket:
         if n < 126:
             w.write(bytes([n]))
         elif n < 65536:
-            w.write(struct.pack('!H', n))
+            w.write(struct.pack('!BH', 126, n))
         else:
-            w.write(struct.pack('!Q', n))
+            w.write(struct.pack('!BQ', 127, n))
         w.write(payload)
         await w.drain()
