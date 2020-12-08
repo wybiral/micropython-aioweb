@@ -38,7 +38,6 @@ window.onload = () => {
 <div id="out"></div>
 </body></html>''')
     await w.drain()
-    await w.wait_closed()
 
 # Store current WebSocket clients
 WS_CLIENTS = set()

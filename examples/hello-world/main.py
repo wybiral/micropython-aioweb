@@ -17,7 +17,6 @@ async def handler(r, w):
     w.write(b'\r\n')
     w.write(b'Hello world!')
     await w.drain()
-    await w.wait_closed()
 
 # Create WiFi access point
 wifi = network.WLAN(network.AP_IF)

@@ -25,7 +25,6 @@ async def handler(r, w):
         except:
             break
         await asyncio.sleep(1)
-    await w.wait_closed()
 
 # Create WiFi access point
 wifi = network.WLAN(network.AP_IF)
