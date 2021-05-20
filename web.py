@@ -97,6 +97,7 @@ class App:
             if r.method not in methods:
                 continue
             await handler(r, w)
+            await w.wait_closed()
             return
         await w.awrite(b'HTTP/1.0 404 Not Found\r\n\r\nNot Found')
         await w.wait_closed()
