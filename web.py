@@ -186,3 +186,31 @@ class WebSocket:
             w.write(struct.pack('!BQ', 127, n))
         w.write(payload)
         await w.drain()
+
+
+class EventSource:
+
+    @classmethod
+    async def upgrade(cls, r, w):
+        w.write(b'HTTP/1.0 200 OK\r\n')
+        w.write(b'Content-Type: text/event-stream\r\n')
+        w.write(b'Cache-Control: no-cache\r\n')
+        w.write(b'Connection: keep-alive\r\n')
+        w.write(b'Access-Control-Allow-Origin: *\r\n')
+        w.write(b'\r\n')
+        await w.drain()
+        return cls(r, w)
+
+    def __init__(self, r, w):
+        self.r = r
+        self.w = w
+
+    async def send(self, msg, id=None, event=None):
+        w = self.w
+        if id is not None:
+            w.write(b'id: {}\r\n'.format(id))
+        if event is not None:
+            w.write(b'event: {}\r\n'.format(event))
+        w.write(b'data: {}\r\n'.format(msg))
+        w.write(b'\r\n')
+        await w.drain()
