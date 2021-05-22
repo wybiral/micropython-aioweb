@@ -7,6 +7,7 @@ A very minimal asyncio web framework for MicroPython. Doesn't come with all the 
 * basic endpoint/method based routing similar to flask (currently doesn't do any pattern matching)
 * parses http request line, headers, and query strings
 * supports WebSockets!
+* supports Server-Side Events!
 
 ## Examples
 ### Basic "Hello world!"
@@ -65,4 +66,20 @@ async def ws_handler(r, w):
             # print received messages and echo them
             print('Received:', evt['data'])
             await ws.send(evt['data'])
+```
+### SSE (Server-Side Events) handler
+```python
+# /events EventSource route handler
+@app.route('/events')
+async def ws_handler(r, w):
+    # upgrade connection to text/event-stream
+    sse = await web.EventSource.upgrade(r, w)
+    count = 0
+    while True:
+        count += 1
+        try:
+            await sse.send('Hello world #{}'.format(count))
+        except:
+            break
+        await asyncio.sleep(1)
 ```
