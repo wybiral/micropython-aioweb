@@ -32,7 +32,7 @@ window.onload = () => {
 # /events EventSource handler
 @app.route('/events')
 async def events_handler(r, w):
-    # upgrade connection to EventSource (Server-Side Events)
+    # upgrade connection to EventSource (Server-Sent Events)
     sse = await web.EventSource.upgrade(r, w)
     count = 0
     while True:
