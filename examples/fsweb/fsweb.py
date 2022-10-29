@@ -46,7 +46,8 @@ async def root_handler(r, w):
         return
 
     w.write(b'HTTP/1.0 200 OK\r\n')
-
+    w.write(b'Content-Length: %i\r\n' % uos.stat(r.path)[6])
+    
     p = r.path
     if p.endswith(".gz"):
         w.write(b'Content-Encoding: gzip\r\n')
@@ -66,6 +67,8 @@ async def root_handler(r, w):
     w.write(b'\r\n\r\n')
 
     l = f.read(1024)
+    if not l:
+       await w.drain() 
     while (l):
         w.write(l)
         await w.drain()
@@ -111,14 +114,31 @@ async def edit_post_handler(r, w):
                         f.write(body)
                         if cl==sl:
                             break
-                    f.close()                    
+                    f.close()
                     bd = await r.read(2); cl-=2
                 except OSError:
                     print("err saving")
             else:
                 body = await r.readline()
                 cl-=len(body)
-                print(body[:-2].decode())
+                body = body[:-2].decode()
+                
+                if fd["name"]=="path":
+                    if r.method=="PUT":
+                        if body.endswith("/"):
+                            uos.mkdir(body[:-1])
+                        else:
+                            f = open(body, 'w+')
+                            f.close()
+                    elif r.method=="DELETE":
+                        stat = uos.stat(body)
+                        if (stat[0]==16384):
+                            uos.rmdir(body)
+                        else:
+                            uos.remove(body)
+                else:
+                    print(body)
+                
     if cl != 0:
         w.write(b'HTTP/1.0 500 Internal error\r\n')
     else:
