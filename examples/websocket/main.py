@@ -48,14 +48,13 @@ async def ws_handler(r, w):
     global WS_CLIENTS
     # upgrade connection to WebSocket
     ws = await web.WebSocket.upgrade(r, w)
-    r.closed = False
     # add current client to set
     WS_CLIENTS.add(ws)
-    while ws.open:
+    while True:
         # handle ws events
         evt = await ws.recv()
         if evt is None or evt['type'] == 'close':
-            ws.open = False
+            break
         elif evt['type'] == 'text':
             # echo received message to all clients
             for ws_client in WS_CLIENTS:

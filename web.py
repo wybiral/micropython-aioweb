@@ -135,7 +135,6 @@ class WebSocket:
     def __init__(self, r, w):
         self.r = r
         self.w = w
-        self.open = True
 
     async def recv(self):
         r = self.r
