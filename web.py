@@ -79,6 +79,10 @@ class App:
         self.port = port
         self.handlers = []
 
+    def add_handler(self, path, handler, methods=['GET']):
+        self.handlers.append((path, methods, handler))
+
+
     def route(self, path, methods=['GET']):
         def wrapper(handler):
             self.handlers.append((path, methods, handler))
@@ -92,7 +96,7 @@ class App:
             await w.wait_closed()
             return
         for path, methods, handler in self.handlers:
-            if r.path != path:
+            if not r.path.startswith(path):
                 continue
             if r.method not in methods:
                 continue
